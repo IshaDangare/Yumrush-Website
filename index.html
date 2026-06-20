@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YumRush Food - Order Momos Online</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<!-- HEADER WITH LOGO & INFO -->
+<header>
+<div class="header-container">
+<div class="logo-section">
+<h1>🍜 YumRush Food</h1>
+<p class="tagline">Fresh • Hot • Hygienic</p>
+</div>
+<div class="restaurant-info">
+<p><strong>📍 Location:</strong> Malad East, Mumbai</p>
+<p><strong>⏰ Hours:</strong> 11:00 AM - 10:00 PM Daily</p>
+<p><strong>📱 Instagram:</strong> @yumrushfood | <strong>☎️ Phone:</strong> +91-9136535275</p>
+</div>
+</div>
+</header>
+
+<main>
+<!-- MENU SECTION -->
+<section class="menu-section">
+<h2>🍜 Our Momos</h2>
+<div id="menu" class="menu-grid"></div>
+</section>
+
+<!-- CART SUMMARY -->
+<section class="cart-summary" id="cartSummary" style="display:none;">
+<h3>📦 Order Summary</h3>
+<div id="cartItems"></div>
+<div class="summary-box">
+<p>Food Total: <strong id="foodTotal">₹0</strong></p>
+<p>Discount: <strong id="discountAmount" style="color:green;">₹0</strong></p>
+<p>Delivery Charge: <strong id="deliveryCharge">₹0</strong></p>
+<p class="grand-total">Grand Total: <strong id="grandTotal">₹0</strong></p>
+</div>
+</section>
+
+<!-- CUSTOMER DETAILS SECTION -->
+<section class="checkout">
+<h2>📋 Customer Details</h2>
+
+<div class="form-group">
+<label>Full Name *</label>
+<input id="name" placeholder="Enter your full name" required>
+</div>
+
+<div class="form-group">
+<label>Phone Number * (10 digits)</label>
+<input id="phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required>
+</div>
+
+<div class="form-group">
+<label>Your Location/Address *</label>
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+<div>
+<label style="font-size: 0.9em; color: #666;">Flat No / House No</label>
+<input id="flatNo" placeholder="Flat number" required>
+</div>
+<div>
+<label style="font-size: 0.9em; color: #666;">Road Name</label>
+<input id="roadName" placeholder="Road/Street name" required>
+</div>
+<div>
+<label style="font-size: 0.9em; color: #666;">Area Name</label>
+<input id="areaName" placeholder="Area/Locality" required>
+</div>
+</div>
+</div>
+
+<!-- DISTANCE & AREA SELECTION -->
+<div class="form-group">
+<label>📍 Pick Your Delivery Location (Click on Map) *</label>
+<div id="mapContainer" style="height: 300px; border-radius: 8px; overflow: hidden; border: 2px solid #ff7a00; margin-bottom: 10px;"></div>
+<p style="font-size: 0.9em; color: #666; margin: 10px 0;">
+⚠️ <strong>Delivery available only between Borivali to Jogeshwari (up to 5 KM)</strong><br>
+📍 Click on the map to select your location
+</p>
+<input type="hidden" id="selectedLat" value="">
+<input type="hidden" id="selectedLng" value="">
+<div class="location-info" id="locationInfo" style="display: none;">
+<p><strong>📍 Selected Location:</strong> <span id="selectedLocationName"></span></p>
+<p><strong>📏 Distance from Restaurant:</strong> <span id="selectedDistance"></span> KM</p>
+<p id="locationWarning" style="color: red; display: none;">❌ Location is outside delivery area (max 5 KM)</p>
+</div>
+</div>
+
+<!-- PAYMENT OPTION -->
+<div class="form-group">
+<label>Payment Method *</label>
+<div class="payment-options">
+<label>
+<input type="radio" name="paymentType" value="70-30" checked onchange="updatePaymentDisplay()">
+70% Before Order, 30% After Delivery
+</label>
+<label>
+<input type="radio" name="paymentType" value="full" onchange="updatePaymentDisplay()">
+Full Payment Before Order
+</label>
+</div>
+</div>
+
+<!-- PAYMENT DISPLAY -->
+<div class="payment-display" id="paymentDisplay">
+<div class="payment-box">
+<h4>💳 Payment Details</h4>
+<p id="paymentInfo"></p>
+</div>
+</div>
+
+<!-- QR CODE -->
+<div class="qr-section" id="qrSection" style="display:none;">
+<h4>📱 Scan to Pay</h4>
+<div id="qrcode" class="qr-code"></div>
+<p style="font-size:12px; margin-top:10px;">Amount: <strong id="qrAmount">₹0</strong></p>
+</div>
+
+<!-- ORDER TIMING -->
+<div class="timing-display" id="timingDisplay" style="display:none;">
+<h4>⏱️ Order Timing</h4>
+<p>Order Placed: <strong id="orderTime"></strong></p>
+<p>Estimated Dispatch: <strong id="dispatchTime"></strong></p>
+<p>Estimated Delivery: <strong id="deliveryTime"></strong></p>
+</div>
+
+<!-- DELIVERY MAP INFO -->
+<div class="map-info" id="mapInfo" style="display:none;">
+<h4>🗺️ Delivery Route Information</h4>
+<p>📍 From: <strong>Malad East, Mumbai (Restaurant)</strong></p>
+<p>📍 To: <strong id="deliveryTo"></strong></p>
+<p>📏 Distance: <strong id="mapDistance"></strong> KM</p>
+<p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+<em>View detailed route on Google Maps: <a href="#" id="mapsLink" target="_blank" style="color: #ff7a00;">Open in Maps →</a></em>
+</p>
+</div>
+
+<!-- DISCOUNT & MINIMUM ORDER INFO -->
+<div class="discount-info">
+<h4>🎉 Special Discounts & Offers</h4>
+<p>⚠️ <strong>Minimum Order: ₹250</strong></p>
+<p>✓ Above ₹500: <strong>5% OFF</strong></p>
+<p>✓ Above ₹1000: <strong>8% OFF</strong></p>
+<p>✓ Above ₹2500: <strong>12% OFF</strong></p>
+<p style="margin-top: 10px; font-size: 0.9em;">⏱️ <strong>Preparation Time:</strong> 20-25 mins | Delivery time varies by location</p>
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="button-group">
+<button onclick="generatePaymentSlip()" class="btn-info">📄 Preview Slip</button>
+<button onclick="order()" class="btn-success">📱 Order on WhatsApp</button>
+<button onclick="resetOrder()" class="btn-secondary">🔄 Reset Order</button>
+</div>
+
+</section>
+
+<!-- PAYMENT SLIP MODAL -->
+<div id="slipModal" class="modal" style="display:none;">
+<div class="modal-content">
+<span class="close" onclick="closeSlip()">&times;</span>
+<div id="paymentSlip" class="payment-slip"></div>
+<div class="modal-buttons">
+<button onclick="shareSlipWhatsApp()" class="btn-success">📱 Share on WhatsApp</button>
+<button onclick="printSlip()" class="btn-info">🖨️ Print Slip</button>
+<button onclick="closeSlip()" class="btn-secondary">Close</button>
+</div>
+</div>
+</div>
+
+<footer>
+<p>🔒 Secure Payment | 🚚 Fast Delivery | 👨‍🍳 Hygenic Preparation</p>
+</footer>
+
+<script src="script.js"></script>
+</body></html>
