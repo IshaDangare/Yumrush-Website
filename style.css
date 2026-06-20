@@ -319,6 +319,10 @@ main {
     margin: 15px 0;
 }
 
+.qr-download-btn {
+    margin-top: 12px;
+}
+
 /* TIMING DISPLAY */
 .timing-display {
     background: linear-gradient(135deg, #ffe6cc 0%, #fff0d9 100%);

@@ -364,6 +364,25 @@ function updateQRCode(amount) {
     }
 }
 
+// Download generated payment QR code
+function downloadQRCode() {
+    const qrcode = document.getElementById('qrcode');
+    if (!qrcode) return;
+
+    const qrImage = qrcode.querySelector('canvas') || qrcode.querySelector('img');
+    if (!qrImage) {
+        alert('Please add items first to generate the QR code.');
+        return;
+    }
+
+    const downloadLink = document.createElement('a');
+    downloadLink.download = 'yumrush-payment-qr.png';
+    downloadLink.href = qrImage.tagName.toLowerCase() === 'canvas'
+        ? qrImage.toDataURL('image/png')
+        : qrImage.src;
+    downloadLink.click();
+}
+
 // Calculate Timings based on distance
 function calculateTimings() {
     const timingDisplay = document.getElementById('timingDisplay');
