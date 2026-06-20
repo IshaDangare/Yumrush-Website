@@ -20,7 +20,7 @@ const items = [
         id: 1,
         name: 'Veg Momos',
         price: 80,
-        image: 'images/ChatGPT Image Jun 2, 2026, 05_36_58 PM.png',
+        image: 'images/veg-momos.png',
         description: 'Fresh vegetable momos with soup',
         q: 0
     },
@@ -28,7 +28,7 @@ const items = [
         id: 2,
         name: 'Paneer Momos',
         price: 120,
-        image: 'images/ChatGPT Image Jun 5, 2026, 04_07_15 PM.png',
+        image: 'images/paneer-momos.png',
         description: 'Paneer & vegetable momos with soup',
         q: 0
     },
@@ -36,7 +36,7 @@ const items = [
         id: 3,
         name: 'Chicken Momos',
         price: 140,
-        image: 'images/Chicken fied peri perivmommo.png',
+        image: 'images/chicken-momos.png',
         description: 'Spicy chicken momos with soup',
         q: 0
     },
@@ -44,7 +44,7 @@ const items = [
         id: 4,
         name: 'Paneer Tikka Momos',
         price: 140,
-        image: 'images/ChatGPT Image May 25, 2026, 06_32_34 PM.png',
+        image: 'images/paneer-tikka-momos.png',
         description: 'Tandoori paneer momos with chutney',
         q: 0
     },
@@ -52,7 +52,7 @@ const items = [
         id: 5,
         name: 'Tandoori Chicken Momos',
         price: 160,
-        image: 'images/ChatGPT Image May 25, 2026, 06_23_37 PM.png',
+        image: 'images/tandoori-chicken-momos.png',
         description: 'Tandoori flavoured chicken momos',
         q: 0
     },
@@ -60,7 +60,7 @@ const items = [
         id: 6,
         name: 'Mixed Momos',
         price: 100,
-        image: 'images/ChatGPT Image May 25, 2026, 06_21_42 PM.png',
+        image: 'images/mixed-momos.png',
         description: 'Veg and paneer combination momos',
         q: 0
     }
