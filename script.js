@@ -11,13 +11,16 @@ const RESTAURANT = {
     minDeliveryKm: 0
 };
 
+// Replace this with your Razorpay Key ID from the Razorpay Dashboard.
+const RAZORPAY_KEY_ID = 'rzp_test_REPLACE_WITH_YOUR_KEY';
+
 // Menu Items with images
 const items = [
     {
         id: 1,
         name: 'Veg Momos',
         price: 80,
-        image: 'https://via.placeholder.com/200x150?text=Veg+Momos',
+        image: 'images/ChatGPT Image Jun 2, 2026, 05_36_58 PM.png',
         description: 'Fresh vegetable momos with soup',
         q: 0
     },
@@ -25,7 +28,7 @@ const items = [
         id: 2,
         name: 'Paneer Momos',
         price: 120,
-        image: 'https://via.placeholder.com/200x150?text=Paneer+Momos',
+        image: 'images/ChatGPT Image Jun 5, 2026, 04_07_15 PM.png',
         description: 'Paneer & vegetable momos with soup',
         q: 0
     },
@@ -33,7 +36,7 @@ const items = [
         id: 3,
         name: 'Chicken Momos',
         price: 140,
-        image: 'https://via.placeholder.com/200x150?text=Chicken+Momos',
+        image: 'images/Chicken fied peri perivmommo.png',
         description: 'Spicy chicken momos with soup',
         q: 0
     },
@@ -41,7 +44,7 @@ const items = [
         id: 4,
         name: 'Paneer Tikka Momos',
         price: 140,
-        image: 'https://via.placeholder.com/200x150?text=Paneer+Tikka+Momos',
+        image: 'images/ChatGPT Image May 25, 2026, 06_32_34 PM.png',
         description: 'Tandoori paneer momos with chutney',
         q: 0
     },
@@ -49,7 +52,7 @@ const items = [
         id: 5,
         name: 'Tandoori Chicken Momos',
         price: 160,
-        image: 'https://via.placeholder.com/200x150?text=Tandoori+Chicken+Momos',
+        image: 'images/ChatGPT Image May 25, 2026, 06_23_37 PM.png',
         description: 'Tandoori flavoured chicken momos',
         q: 0
     },
@@ -57,7 +60,7 @@ const items = [
         id: 6,
         name: 'Mixed Momos',
         price: 100,
-        image: 'https://via.placeholder.com/200x150?text=Mixed+Momos',
+        image: 'images/ChatGPT Image May 25, 2026, 06_21_42 PM.png',
         description: 'Veg and paneer combination momos',
         q: 0
     }
@@ -221,7 +224,7 @@ function draw() {
     items.forEach((item, index) => {
         menu.innerHTML += `
             <div class='card'>
-                <img src='${item.image}' alt='${item.name}' class='item-image'>
+                <img src='${item.image}' alt='${item.name}' class='item-image' loading='lazy'>
                 <h3>${item.name}</h3>
                 <p class='description'>${item.description}</p>
                 <p class='price'>₹${item.price}</p>
@@ -268,6 +271,55 @@ function calculateDeliveryCharge(distance) {
     if (distance > RESTAURANT.maxDeliveryKm) return 0;
     const charge = RESTAURANT.baseDeliveryCharge + (distance * RESTAURANT.pricePerKm);
     return Math.round(charge);
+}
+
+function getBillTotals() {
+    const total = calculateTotal();
+    const discount = calculateDiscount(total);
+    const deliveryCharge = selectedDistance > 0 && selectedDistance <= RESTAURANT.maxDeliveryKm ? calculateDeliveryCharge(selectedDistance) : 0;
+    const grandTotal = Math.round(total - discount + deliveryCharge);
+
+    return { total, discount, deliveryCharge, grandTotal };
+}
+
+function validateCheckoutDetails() {
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const flatNo = document.getElementById('flatNo').value.trim();
+    const roadName = document.getElementById('roadName').value.trim();
+    const areaName = document.getElementById('areaName').value.trim();
+    const total = calculateTotal();
+
+    if (!name || !phone || !flatNo || !roadName || !areaName || selectedDistance === 0) {
+        alert('Please fill all details and select location on map');
+        return null;
+    }
+
+    if (phone.length !== 10 || !/^[0-9]{10}$/.test(phone)) {
+        alert('Please enter a valid 10-digit phone number');
+        return null;
+    }
+
+    if (selectedDistance > RESTAURANT.maxDeliveryKm) {
+        alert('Selected location is outside delivery area (max ' + RESTAURANT.maxDeliveryKm + ' KM)');
+        return null;
+    }
+
+    if (total === 0) {
+        alert('Please select items');
+        return null;
+    }
+
+    if (total < 250) {
+        alert('Minimum order amount is ₹250. Current total: ₹' + total);
+        return null;
+    }
+
+    return {
+        name,
+        phone,
+        address: `${flatNo}, ${roadName}, ${areaName}`
+    };
 }
 
 // Update Cart Summary
@@ -339,6 +391,70 @@ function updatePaymentDisplay() {
     
     const paymentInfoEl = document.getElementById('paymentInfo');
     if (paymentInfoEl) paymentInfoEl.innerHTML = paymentInfo;
+}
+
+// Open Razorpay payment gateway
+function payOnline() {
+    const customer = validateCheckoutDetails();
+    if (!customer) return;
+
+    const paymentType = document.querySelector('input[name="paymentType"]:checked');
+    const { grandTotal } = getBillTotals();
+    const amountToPay = paymentType && paymentType.value === '70-30'
+        ? Math.round(grandTotal * 0.7)
+        : grandTotal;
+    const statusEl = document.getElementById('paymentGatewayStatus');
+
+    if (RAZORPAY_KEY_ID.includes('REPLACE_WITH_YOUR_KEY')) {
+        alert('Please add your Razorpay Key ID in script.js before accepting online payments.');
+        return;
+    }
+
+    if (typeof Razorpay === 'undefined') {
+        alert('Payment gateway could not load. Please check your internet connection and try again.');
+        return;
+    }
+
+    const orderId = 'YR' + Math.random().toString(9).substr(2, 9);
+    const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: amountToPay * 100,
+        currency: 'INR',
+        name: RESTAURANT.name,
+        description: 'YumRush Food Order ' + orderId,
+        image: '',
+        prefill: {
+            name: customer.name,
+            contact: customer.phone
+        },
+        notes: {
+            order_id: orderId,
+            address: customer.address,
+            location: selectedLocationName,
+            payment_type: paymentType ? paymentType.value : 'full'
+        },
+        theme: {
+            color: '#ff7a00'
+        },
+        handler: function(response) {
+            if (statusEl) {
+                statusEl.textContent = 'Payment successful. Payment ID: ' + response.razorpay_payment_id;
+                statusEl.className = 'payment-gateway-status success';
+            }
+            alert('Payment successful. Please click Order on WhatsApp to send your order details.');
+        },
+        modal: {
+            ondismiss: function() {
+                if (statusEl) {
+                    statusEl.textContent = 'Payment was not completed.';
+                    statusEl.className = 'payment-gateway-status';
+                }
+            }
+        }
+    };
+
+    const razorpay = new Razorpay(options);
+    razorpay.open();
 }
 
 // Update QR Code

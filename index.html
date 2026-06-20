@@ -8,11 +8,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 <!-- HEADER WITH LOGO & INFO -->
 <header>
 <div class="header-container">
+<div class="hero-copy">
 <div class="logo-section">
 <h1>🍜 YumRush Food</h1>
 <p class="tagline">Fresh • Hot • Hygienic</p>
@@ -22,6 +24,8 @@
 <p><strong>⏰ Hours:</strong> 11:00 AM - 10:00 PM Daily</p>
 <p><strong>📱 Instagram:</strong> @yumrushfood | <strong>☎️ Phone:</strong> +91-9136535275</p>
 </div>
+</div>
+<img class="hero-image" src="images/ChatGPT Image Jun 5, 2026, 04_07_15 PM.png" alt="Fresh steamed momos in a bamboo basket">
 </div>
 </header>
 
@@ -113,6 +117,8 @@ Full Payment Before Order
 <div class="payment-box">
 <h4>💳 Payment Details</h4>
 <p id="paymentInfo"></p>
+<button type="button" onclick="payOnline()" class="btn-primary payment-gateway-btn">Pay Online</button>
+<p id="paymentGatewayStatus" class="payment-gateway-status"></p>
 </div>
 </div>
 

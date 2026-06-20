@@ -22,6 +22,24 @@ header {
 .header-container {
     max-width: 1200px;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 28px;
+    align-items: center;
+}
+
+.hero-copy {
+    min-width: 0;
+}
+
+.hero-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.65);
+    border-radius: 14px;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+    display: block;
 }
 
 .logo-section h1 {
@@ -91,10 +109,13 @@ main {
 
 .item-image {
     width: 100%;
-    height: 150px;
+    aspect-ratio: 4 / 3;
+    height: auto;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
+    background: #f4f4f4;
+    display: block;
 }
 
 .card h3 {
@@ -296,6 +317,22 @@ main {
     margin: 8px 0;
     color: #333;
     line-height: 1.5;
+}
+
+.payment-gateway-btn {
+    margin-top: 8px;
+}
+
+.payment-gateway-status {
+    min-height: 20px;
+    margin-top: 10px !important;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #777 !important;
+}
+
+.payment-gateway-status.success {
+    color: #2e7d32 !important;
 }
 
 /* QR CODE */
@@ -581,6 +618,15 @@ footer p {
 @media (max-width: 768px) {
     header {
         padding: 20px 15px;
+    }
+
+    .header-container {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .hero-image {
+        max-height: 260px;
     }
     
     .logo-section h1 {
